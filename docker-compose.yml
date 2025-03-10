@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: baldussi-api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
