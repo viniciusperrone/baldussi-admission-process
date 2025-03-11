@@ -12,6 +12,7 @@ services:
       - .:/app
     depends_on:
       - db
+      - mongodb
 
   db:
     image: postgres
@@ -25,5 +26,15 @@ services:
       POSTGRES_USER: "baldussi"
       POSTGRES_DB: "baldussi"
 
+  mongodb:
+    image: mongo:latest
+    container_name: baldussi-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
 volumes:
+  mongodb_data:
   pgdata:
