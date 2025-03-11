@@ -25,8 +25,9 @@ def create_user():
     new_user = UserModel(
         name=data["name"],
         email=data["email"],
-        password=data["password"]
     )
+
+    new_user.set_password(data['password'])
 
     try:
         db.session.add(new_user)
