@@ -43,6 +43,16 @@ def create_user():
 def list_users():
     users = UserModel.query.all()
 
-    user_schema = UserSchema(many=True)
+    users_schema = UserSchema(many=True)
 
-    return jsonify(user_schema.dump(users)), 200
+    return jsonify(users_schema.dump(users)), 200
+
+def detail_user(user_id):
+    user = UserModel.query.get(user_id)
+
+    user_schema = UserSchema()
+
+    if not user:
+        return jsonify({"message": "Doesn't match user with given id"}), 404
+
+    return jsonify(user_schema.dump(user)), 200
