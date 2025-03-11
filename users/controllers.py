@@ -39,3 +39,10 @@ def create_user():
         print(str(e))
 
         return jsonify({"message": "Internal Server Error"}), 500
+
+def list_users():
+    users = UserModel.query.all()
+
+    user_schema = UserSchema(many=True)
+
+    return jsonify(user_schema.dump(users)), 200
