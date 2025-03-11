@@ -1,6 +1,7 @@
 from flask import request, jsonify
+import json
 
-from audios.services import AudioSaveService
+from audios.services import AudioSaveService, TranscriptionService
 
 from utils.helpers_files import allowed_file
 
@@ -16,6 +17,13 @@ def upload_file():
 
         filepath = audio_save_service.save_file_local()
 
-        return jsonify({"path": filepath}), 200
+        transcription_service = TranscriptionService(filepath)
+
+        transcribe_audio = transcription_service.transcribe_audio()
+
+        if not transcribe_audio:
+            return jsonify({"error": "Unable to perform action"}), 400
+
+        return jsonify(json.dumps(transcribe_audio)), 200
 
     return jsonify({"error": "Invalid file type"}), 400

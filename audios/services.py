@@ -1,13 +1,14 @@
 import os
 from datetime import datetime as dt
 
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 from werkzeug.utils import secure_filename
 from utils.helpers_files import UPLOAD_FOLDER
 
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class AudioSaveService():
 
@@ -34,16 +35,21 @@ class AudioSaveService():
         return filepath
 
 class TranscriptionService:
-    def __init__(self, file_path, filename):
-        self.file_path = file_path
-        self.filename = filename
+    def __init__(self, filepath):
+        self.filepath = filepath
 
     def transcribe_audio(self):
         try:
-            with open(self.file_path, "rb") as audio_file:
-                response = openai.Audio.transcribe("whisper-1", audio_file)
+            audio_file = open(self.filepath, "rb")
 
-            transcription_text = response["text"]
+            response = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            )
+
+            transcription_text = response.text
+
+            print("transcription_text", transcription_text)
 
             transcription_data = {
                 "filename": self.filename,
