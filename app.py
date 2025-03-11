@@ -1,8 +1,11 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask
+from flask_migrate import Migrate
 
 from config.db import db
+
+import users
 
 
 load_dotenv()
@@ -12,9 +15,11 @@ def initialize_app():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
-    app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO') 
+    app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO')
 
     db.init_app(app)
+
+    migrate = Migrate(app, db)
 
     return app
 
