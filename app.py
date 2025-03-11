@@ -7,6 +7,8 @@ from config.db import db
 
 import users
 
+from users.routes import users_blueprint
+
 
 load_dotenv()
 
@@ -20,6 +22,8 @@ def initialize_app():
     db.init_app(app)
 
     migrate = Migrate(app, db)
+
+    app.register_blueprint(users_blueprint)
 
     return app
 
