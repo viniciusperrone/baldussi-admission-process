@@ -68,12 +68,14 @@ def update_transcription(transcription_id):
 
 
     try:
-        updated_transcription = AudioModel.updated_audio(transcription_id, data)
+        AudioModel.updated_audio(transcription_id, data)
 
-        return jsonify(transcription_schema.dump(updated_transcription))
+        updated_transcription = AudioModel.get_audio_by_id(transcription_id)
+
+        return jsonify(transcription_schema.dump(updated_transcription)), 200
 
     except Exception as e:
-        return jsonify({"message": "Internal Server Error"}), 201
+        return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
 
 def delete_transcription(transcription_id):
     transcription = AudioModel.get_audio_by_id(transcription_id)

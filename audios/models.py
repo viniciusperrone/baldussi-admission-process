@@ -29,12 +29,16 @@ class AudioModel:
 
     @staticmethod
     def updated_audio(audio_id, update_data):
-        setattr(update_data, "updated_at", dt.utcnow())
+        update_data["updated_at"] = dt.utcnow()
 
-        return AudioModel.collection.update_one(
+        AudioModel.collection.update_one(
             {"_id": ObjectId(audio_id)},
             {"$set": update_data}
         )
+
+        updated_audio = AudioModel.collection.find_one({"_id": ObjectId(audio_id)})
+
+        return updated_audio
 
     @staticmethod
     def list_audios():
