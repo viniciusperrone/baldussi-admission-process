@@ -41,3 +41,18 @@ def upload_file():
         return jsonify(audio_schema.dump(saved_audio)), 201
 
     return jsonify({"error": "Invalid file type"}), 400
+
+def list_transcriptions():
+    transcriptions = AudioModel.list_audios()
+    transcriptions_schema = AudioSchema(many=True)
+
+    return jsonify(transcriptions_schema.dump(transcriptions)), 200
+
+def detail_transcription():
+    ...
+
+def update_transcription():
+    ...
+
+def delete_transcription():
+    ...
