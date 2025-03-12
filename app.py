@@ -29,6 +29,8 @@ def initialize_app():
     import users
     import transcriptions
 
+    mongo.db.transcriptions.create_index([('title', 'text'), ('transcription_text', 'text')])
+
     from users.routes import users_blueprint
     from authentication.routes import authentication_blueprint
     from audios.routes import audios_blueprint

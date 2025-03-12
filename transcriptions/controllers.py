@@ -1,6 +1,8 @@
 from flask import request, jsonify
 from bson.objectid import ObjectId
 
+from config.mongo import mongo
+
 from transcriptions.models import TranscriptionModel
 from transcriptions.schemas import TranscriptionSchema
 
@@ -53,3 +55,14 @@ def delete_transcription(transcription_id):
 
     except Exception as e:
         return jsonify({"message": "Internal Server Error"}), 201
+
+
+def search_transcriptions_by_query():
+    query = request.args.get("query", None)
+
+    if not query:
+        return jsonify({"error": "Query parameter is required"}), 400
+
+    results = list(mongo.db.transcriptions.find({"$text": {"$search": query}}))
+
+    return jsonify({"results": results}), 200
