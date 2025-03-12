@@ -41,11 +41,28 @@ def create_user():
         return jsonify({"message": "Internal Server Error"}), 500
 
 def list_users():
-    users = UserModel.query.all()
+    page = request.args.get('page', 1, type=int)
+    items_per_page = request.args.get('per_page', 10, type=int)
+
+    pagination_users = UserModel.query.paginate(
+        page=page,
+        per_page=items_per_page,
+        error_out=False
+    )
+
+    users = pagination_users.items
 
     users_schema = UserSchema(many=True)
 
-    return jsonify(users_schema.dump(users)), 200
+    return jsonify({
+        "total": pagination_users.total,
+        "page": pagination_users.page,
+        "per_page": pagination_users.per_page,
+        "pages": pagination_users.page,
+        "has_next": pagination_users.has_next,
+        "has_prev": pagination_users.has_prev,
+        "users": users_schema.dump(users)
+    }), 200
 
 def detail_user(user_id):
     user = UserModel.query.get(user_id)
