@@ -8,10 +8,25 @@ from transcriptions.schemas import TranscriptionSchema
 
 
 def list_transcriptions():
-    transcriptions = TranscriptionModel.list_transcriptions()
+    page = request.args.get('page', 1, type=int)
+    items_per_page = request.args.get('per_page', 10, type=int)
+
+    skip = (page - 1) * items_per_page
+
+    transcriptions = TranscriptionModel.collection.find().skip(skip).limit(items_per_page)
+    total_count = TranscriptionModel.collection.count_documents({})
+
+    total_pages = (total_count + items_per_page - 1) // items_per_page
+
     transcriptions_schema = TranscriptionSchema(many=True)
 
-    return jsonify(transcriptions_schema.dump(transcriptions)), 200
+    return jsonify({
+        'total_count': total_count,
+        'page': page,
+        'per_page': items_per_page,
+        'total_pages': total_pages,
+        'transcriptions': transcriptions_schema.dump(transcriptions),
+    }), 200
 
 def detail_transcription(transcription_id):
     transcription = TranscriptionModel.get_transcription_by_id(transcription_id)
