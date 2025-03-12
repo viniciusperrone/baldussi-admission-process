@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from flasgger import Swagger
 
 from config.db import db
 from config.mongo import mongo
@@ -26,6 +27,8 @@ def initialize_app():
 
     jwt = JWTManager(app)
 
+    swagger = Swagger(app)
+
     import users
     import transcriptions
 
@@ -40,6 +43,7 @@ def initialize_app():
     app.register_blueprint(authentication_blueprint)
     app.register_blueprint(audios_blueprint)
     app.register_blueprint(transcriptions_blueprint)
+
 
     return app
 
