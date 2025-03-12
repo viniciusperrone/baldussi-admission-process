@@ -1,8 +1,6 @@
 from flask import request, jsonify
 from bson.objectid import ObjectId
 
-import json
-
 from audios.models import AudioModel
 from audios.schemas import AudioSchema
 from audios.services import AudioSaveService, TranscriptionService
@@ -60,7 +58,22 @@ def detail_transcription(transcription_id):
     return jsonify(transcription_schema.dump(transcription)), 200
 
 def update_transcription(transcription_id):
-    ...
+    transcription = AudioModel.get_audio_by_id(transcription_id)
+    transcription_schema = AudioSchema(partial=True)
+
+    data = request.get_json()
+
+    if not transcription:
+        return jsonify({"message": "Doesn't match transcription with given id"}), 404
+
+
+    try:
+        updated_transcription = AudioModel.updated_audio(transcription_id, data)
+
+        return jsonify(transcription_schema.dump(updated_transcription))
+
+    except Exception as e:
+        return jsonify({"message": "Internal Server Error"}), 201
 
 def delete_transcription(transcription_id):
     transcription = AudioModel.get_audio_by_id(transcription_id)

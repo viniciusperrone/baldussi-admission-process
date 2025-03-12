@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime as dt
 from bson.objectid import ObjectId
 
 from config.mongo import mongo
@@ -22,20 +22,18 @@ class AudioModel:
             "filepath": filepath,
             "transcription_text": transcription,
             "status": status,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow()
+            "created_at": dt.utcnow(),
+            "updated_at": dt.utcnow()
         }
         return AudioModel.collection.insert_one(audio_data)
 
     @staticmethod
-    def get_audio_by_filename(filename):
-        return AudioModel.collection.find_one({"filename": filename})
+    def updated_audio(audio_id, update_data):
+        setattr(update_data, "updated_at", dt.utcnow())
 
-    @staticmethod
-    def update_audio_status(filename, status):
         return AudioModel.collection.update_one(
-            {"filename": filename},
-            {"$set": {"status": status, "updated_at": datetime.utcnow()}}
+            {"_id": ObjectId(audio_id)},
+            {"$set": update_data}
         )
 
     @staticmethod
