@@ -1,4 +1,5 @@
 from flask import jsonify, request
+from flask_jwt_extended import jwt_required
 
 from config.db import db
 
@@ -40,6 +41,7 @@ def create_user():
 
         return jsonify({"message": "Internal Server Error"}), 500
 
+@jwt_required()
 def list_users():
     page = request.args.get('page', 1, type=int)
     items_per_page = request.args.get('per_page', 10, type=int)
@@ -64,6 +66,7 @@ def list_users():
         "users": users_schema.dump(users)
     }), 200
 
+@jwt_required()
 def detail_user(user_id):
     user = UserModel.query.get(user_id)
 

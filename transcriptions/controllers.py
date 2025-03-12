@@ -1,4 +1,6 @@
 from flask import request, jsonify
+from flask_jwt_extended import jwt_required
+
 from bson.objectid import ObjectId
 
 from config.mongo import mongo
@@ -7,6 +9,7 @@ from transcriptions.models import TranscriptionModel
 from transcriptions.schemas import TranscriptionSchema
 
 
+@jwt_required()
 def list_transcriptions():
     page = request.args.get('page', 1, type=int)
     items_per_page = request.args.get('per_page', 10, type=int)
@@ -28,6 +31,7 @@ def list_transcriptions():
         'transcriptions': transcriptions_schema.dump(transcriptions),
     }), 200
 
+@jwt_required()
 def detail_transcription(transcription_id):
     transcription = TranscriptionModel.get_transcription_by_id(transcription_id)
     transcription_schema = TranscriptionSchema()
@@ -37,6 +41,7 @@ def detail_transcription(transcription_id):
 
     return jsonify(transcription_schema.dump(transcription)), 200
 
+@jwt_required()
 def update_transcription(transcription_id):
     transcription = TranscriptionModel.get_transcription_by_id(transcription_id)
     transcription_schema = TranscriptionSchema(partial=True)
@@ -57,6 +62,7 @@ def update_transcription(transcription_id):
     except Exception as e:
         return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
 
+@jwt_required()
 def delete_transcription(transcription_id):
     transcription = TranscriptionModel.get_transcription_by_id(transcription_id)
 
@@ -71,7 +77,7 @@ def delete_transcription(transcription_id):
     except Exception as e:
         return jsonify({"message": "Internal Server Error"}), 201
 
-
+@jwt_required()
 def search_transcriptions_by_query():
     query = request.args.get("query", None)
 

@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from flask_jwt_extended import jwt_required
 
 from transcriptions.models import TranscriptionModel
 from transcriptions.schemas import TranscriptionSchema
@@ -8,6 +9,7 @@ from audios.services import AudioSaveService, TranscriptionService
 from utils.helpers_files import allowed_file
 
 
+@jwt_required()
 def upload_file():
     file = request.files.get("file", None)
 
