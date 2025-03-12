@@ -61,4 +61,5 @@ class TranscriptionService:
             return transcription_data
 
         except Exception as e:
+            print(str(e))
             return None

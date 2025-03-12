@@ -4,10 +4,12 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_pymongo import PyMongo
+from mongoengine import connect
 
 from config.db import db
 
 import users
+import audios
 
 from users.routes import users_blueprint
 from authentication.routes import authentication_blueprint
@@ -24,6 +26,8 @@ def initialize_app():
     app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config["MONGO_URI"] = os.getenv('MONGO_URI')
+
+    connect(host=os.getenv("MONGO_URI"))
 
     db.init_app(app)
 
