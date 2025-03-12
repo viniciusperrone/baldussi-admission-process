@@ -11,6 +11,40 @@ from config.mongo import mongo
 
 load_dotenv()
 
+swagger_config = {
+    "headers": [
+    ],
+    "specs": [
+        {
+            "endpoint": 'specifications',
+            "route": '/specifications.json',
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "specs_route": "/documentation/swagger/"
+}
+
+swagger_template = {
+    "info": {
+        "title": "Teste Técnico | Baldussi Telecom",
+        "description": "Documentação da API com Flask e Swagger",
+        "version": "1.0.0"
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization",
+            "description": "Acesse o endpoint de login e adicione o valor `Bearer <access_token>` no campo abaixo para autenticar todos os endpoints."
+        }
+    },
+    "security": [
+        {"Bearer": []}
+    ],
+}
+
 def initialize_app():
     app = Flask(__name__)
 
@@ -27,7 +61,11 @@ def initialize_app():
 
     jwt = JWTManager(app)
 
-    swagger = Swagger(app)
+    swagger = Swagger(
+        app,
+        config=swagger_config,
+        template=swagger_template,
+    )
 
     import users
     import transcriptions
@@ -43,7 +81,6 @@ def initialize_app():
     app.register_blueprint(authentication_blueprint)
     app.register_blueprint(audios_blueprint)
     app.register_blueprint(transcriptions_blueprint)
-
 
     return app
 
