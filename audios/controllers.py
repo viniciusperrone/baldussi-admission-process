@@ -48,11 +48,17 @@ def list_transcriptions():
 
     return jsonify(transcriptions_schema.dump(transcriptions)), 200
 
-def detail_transcription():
+def detail_transcription(transcription_id):
+    transcription = AudioModel.get_audio_by_id(transcription_id)
+    transcription_schema = AudioSchema()
+
+    if not transcription:
+        return jsonify({"message": "Doesn't match transcription with given id"}), 404
+
+    return jsonify(transcription_schema.dump(transcription)), 200
+
+def update_transcription(transcription_id):
     ...
 
-def update_transcription():
-    ...
-
-def delete_transcription():
+def delete_transcription(transcription_id):
     ...
