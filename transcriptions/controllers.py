@@ -78,6 +78,24 @@ def search_transcriptions_by_query():
     if not query:
         return jsonify({"error": "Query parameter is required"}), 400
 
+    page = request.args.get('page', 1, type=int)
+    items_per_page = request.args.get('per_page', 10, type=int)
+
+    skip = (page - 1) * items_per_page
+
+    results = mongo.db.transcriptions.find({"$text": {"$search": query}}).skip(skip).limit(items_per_page)
+    total_count = mongo.db.transcriptions.count_documents({"$text": {"$search": query}})
+
+    total_pages = (total_count + items_per_page - 1) // items_per_page
+
+    transcriptions_schema = TranscriptionSchema(many=True)
+
     results = list(mongo.db.transcriptions.find({"$text": {"$search": query}}))
 
-    return jsonify({"results": results}), 200
+    return jsonify({
+        'total_count': total_count,
+        'page': page,
+        'per_page': items_per_page,
+        'total_pages': total_pages,
+        'results': transcriptions_schema.dump(results),
+    }), 200
