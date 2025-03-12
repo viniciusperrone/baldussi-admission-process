@@ -1,24 +1,43 @@
-from mongoengine import Document, StringField, DateTimeField
 from datetime import datetime
+from bson.objectid import ObjectId
+
+from config.mongo import mongo
 
 
-CHOICES_STATUS = (
-    ('DONE', 'DONE'),
-    ('PENDING', 'PENDING'),
-    ('FAILED', 'FAILED')
-)
+class AudioModel:
+    collection = mongo.db.audios
 
-class AudioModel(Document):
-    filename = StringField(required=True)
-    file_url = StringField(required=True)
-    transcription_text = StringField(required=False)
-    status = StringField(required=True, choices=CHOICES_STATUS)
-    created_at = DateTimeField(default=datetime.utcnow)
+    @staticmethod
+    def get_audio_by_id(audio_id: str):
+        try:
+            return AudioModel.collection.find_one({"_id": ObjectId(audio_id)})
+        except Exception as e:
+            print(f"Erro ao buscar áudio por ID: {e}")
+            return None
 
-    meta = {
-        'indexes': [
-            'filename',
-            'status',
-            {'fields': ['$transcription_text']}
-        ]
-    }
+    @staticmethod
+    def create_audio(filename, filepath, transcription, status):
+        audio_data = {
+            "filename": filename,
+            "filepath": filepath,
+            "transcription_text": transcription,
+            "status": status,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        return AudioModel.collection.insert_one(audio_data)
+
+    @staticmethod
+    def get_audio_by_filename(filename):
+        return AudioModel.collection.find_one({"filename": filename})
+
+    @staticmethod
+    def update_audio_status(filename, status):
+        return AudioModel.collection.update_one(
+            {"filename": filename},
+            {"$set": {"status": status, "updated_at": datetime.utcnow()}}
+        )
+
+    @staticmethod
+    def list_audios():
+        return list(AudioModel.collection.find())

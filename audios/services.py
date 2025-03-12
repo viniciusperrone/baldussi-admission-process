@@ -9,7 +9,6 @@ from werkzeug.utils import secure_filename
 from utils.helpers_files import UPLOAD_FOLDER
 
 
-
 class AudioSaveService():
 
     def __init__(self, file) -> None:
@@ -32,11 +31,15 @@ class AudioSaveService():
 
         self.file.save(filepath)
 
-        return filepath
+        return {
+            "filename": self.filename,
+            "filepath": filepath
+        }
 
 class TranscriptionService:
-    def __init__(self, filepath):
+    def __init__(self, filepath, filename):
         self.filepath = filepath
+        self.filename = filename
 
     def transcribe_audio(self):
         try:
@@ -49,17 +52,22 @@ class TranscriptionService:
 
             transcription_text = response.text
 
-            print("transcription_text", transcription_text)
-
             transcription_data = {
                 "filename": self.filename,
+                "filepath": self.filepath,
                 "transcription": transcription_text,
-                "status": "REALIZED",
-                "created_at": dt.utcnow()
+                "status": "DONE",
+                "created_at": dt.utcnow().isoformat()
             }
 
             return transcription_data
 
         except Exception as e:
-            print(str(e))
-            return None
+            transcription_data = {
+                "filename": self.filename,
+                "filepath": self.filepath,
+                "transcription": None,
+                "status": "FAILED",
+            }
+
+            return transcription_data
