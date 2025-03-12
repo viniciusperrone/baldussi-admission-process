@@ -29,12 +29,16 @@ class TranscriptionModel:
 
     @staticmethod
     def updated_transcription(transcription_id, update_data):
-        setattr(update_data, "updated_at", dt.utcnow())
+        update_data["updated_at"] = dt.utcnow()
 
-        return TranscriptionModel.collection.update_one(
+        TranscriptionModel.collection.update_one(
             {"_id": ObjectId(transcription_id)},
             {"$set": update_data}
         )
+
+        updated_transcription = TranscriptionModel.collection.find_one({"_id": ObjectId(transcription_id)})
+
+        return updated_transcription
 
     @staticmethod
     def list_transcriptions():

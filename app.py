@@ -27,15 +27,17 @@ def initialize_app():
     jwt = JWTManager(app)
 
     import users
-    import audios
+    import transcriptions
 
     from users.routes import users_blueprint
     from authentication.routes import authentication_blueprint
     from audios.routes import audios_blueprint
+    from transcriptions.routes import transcriptions_blueprint
 
     app.register_blueprint(users_blueprint)
     app.register_blueprint(authentication_blueprint)
     app.register_blueprint(audios_blueprint)
+    app.register_blueprint(transcriptions_blueprint)
 
     return app
 

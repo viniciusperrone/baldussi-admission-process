@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from audios.controllers import list_transcriptions, detail_transcription, update_transcription, delete_transcription
+from transcriptions.controllers import list_transcriptions, detail_transcription, update_transcription, delete_transcription
 
 
 transcriptions_blueprint = Blueprint('transcriptions', __name__)
