@@ -1,4 +1,6 @@
 from flask import request, jsonify
+from bson.objectid import ObjectId
+
 import json
 
 from audios.models import AudioModel
@@ -61,4 +63,15 @@ def update_transcription(transcription_id):
     ...
 
 def delete_transcription(transcription_id):
-    ...
+    transcription = AudioModel.get_audio_by_id(transcription_id)
+
+    if not transcription:
+        return jsonify({"message": "Doesn't match transcription with given id"}), 404
+
+    try:
+        AudioModel.collection.delete_one({"_id": ObjectId(transcription_id)})
+
+        return jsonify({"message": "Transcript deleted successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"message": "Internal Server Error"}), 201

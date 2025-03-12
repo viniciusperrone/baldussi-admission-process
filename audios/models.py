@@ -41,3 +41,15 @@ class AudioModel:
     @staticmethod
     def list_audios():
         return list(AudioModel.collection.find())
+
+    @staticmethod
+    def remove_audio(audio_id: str):
+        try:
+            result = AudioModel.collection.delete_one({"_id": ObjectId(audio_id)})
+            if result.deleted_count > 0:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(str(e))
+            return False
