@@ -3,17 +3,9 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
-from flask_pymongo import PyMongo
-from mongoengine import connect
 
 from config.db import db
-
-import users
-import audios
-
-from users.routes import users_blueprint
-from authentication.routes import authentication_blueprint
-from audios.routes import audios_blueprint
+from config.mongo import mongo
 
 
 load_dotenv()
@@ -27,15 +19,19 @@ def initialize_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config["MONGO_URI"] = os.getenv('MONGO_URI')
 
-    connect(host=os.getenv("MONGO_URI"))
-
     db.init_app(app)
+    mongo.init_app(app)
 
     migrate = Migrate(app, db)
 
     jwt = JWTManager(app)
 
-    mongo = PyMongo(app)
+    import users
+    import audios
+
+    from users.routes import users_blueprint
+    from authentication.routes import authentication_blueprint
+    from audios.routes import audios_blueprint
 
     app.register_blueprint(users_blueprint)
     app.register_blueprint(authentication_blueprint)
